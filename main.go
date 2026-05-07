@@ -1,7 +1,7 @@
 package main
 
 // "encoding/json"
-// "fmt"
+
 //"io"
 //"net/http"
 //"strings"
@@ -37,16 +37,14 @@ package main
 
 // }
 
-// func averagePrice(stocks []Stock) {
-// 	var averagePrice float64
-// 	for _, s := range stocks {
-// 		averagePrice += (s.Price)
-// 	}
-// 	fmt.Println("Average price: ", averagePrice/float64(len(stocks)))
-// }
+//	func averagePrice(stocks []Stock) {
+//		var averagePrice float64
+//		for _, s := range stocks {
+//			averagePrice += (s.Price)
+//		}
+//		fmt.Println("Average price: ", averagePrice/float64(len(stocks)))
+//	}
 func main() {
-
-	api()
 
 	//fmt.Println(r + 'a')
 
@@ -184,4 +182,7 @@ func main() {
 	// mostValuableStock(Stock)
 	// fmt.Println("Average")
 	// averagePrice(Stock)
+
+	api()
+
 }
