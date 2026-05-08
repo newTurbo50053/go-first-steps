@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strconv"
 )
 
 type GlobalQuoteResponse struct {
@@ -71,7 +72,10 @@ func api() {
 	defer resp.Body.Close()
 
 	bodyBytes, err := io.ReadAll(resp.Body)
-
+	if err != nil {
+		fmt.Println("PROBLEM:", err)
+		return
+	}
 	err = json.Unmarshal(bodyBytes, &response)
 
 	if err != nil {
@@ -79,6 +83,20 @@ func api() {
 		return
 	}
 	fmt.Println(string(bodyBytes))
-	fmt.Printf("Symbol: %s\nCena : %v", response.GlobalQuote.Symbol, response.GlobalQuote.Price)
+	fmt.Printf("Symbol: %s\nCena : %v\n", response.GlobalQuote.Symbol, response.GlobalQuote.Price)
 
+	price, err := strconv.ParseFloat(response.GlobalQuote.Price, 64)
+
+	if err != nil {
+		fmt.Println("PROBLEM:", err)
+		return
+	}
+	volume, err := strconv.Atoi(response.GlobalQuote.Volume)
+
+	if err != nil {
+		fmt.Println("PROBLEM:", err)
+		return
+	}
+
+	fmt.Printf("Price as Float64: %v\nVolume as int: %v", price, volume)
 }
