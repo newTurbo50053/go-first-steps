@@ -9,16 +9,6 @@ import (
 	"strconv"
 )
 
-type GlobalQuoteResponse struct {
-	GlobalQuote Quote `json:"Global Quote"`
-}
-
-type Quote struct {
-	Symbol string `json:"01. symbol"`
-	Price  string `json:"05. price"`
-	Volume string `json:"06. volume"`
-}
-
 // func priceChange(stock Stock, newPrice float64, oldPrice float64) {
 // 	change := (newPrice - oldPrice) / oldPrice * 100
 
@@ -49,54 +39,66 @@ type Quote struct {
 // 	return price / float64(len(stocks))
 // }
 
-func api() {
-
+func fetchGlobalQuote(symbol string) (StockQuote, error) {
 	var response GlobalQuoteResponse
 
 	apiKey := os.Getenv("ALPHA_API_KEY")
 
 	if apiKey == "" {
-		fmt.Println("API KEY not found")
-		return
+		return StockQuote{}, fmt.Errorf("api key not found")
 	}
 
-	symbol := "IBM"
 	url := "https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=" + symbol + "&apikey=" + apiKey
+
 	resp, err := http.Get(url)
 
 	if err != nil {
-		fmt.Println("PROBLRM: ", err)
-		return
+		return StockQuote{}, fmt.Errorf("request error: %v", err)
 	}
 
 	defer resp.Body.Close()
 
 	bodyBytes, err := io.ReadAll(resp.Body)
+
 	if err != nil {
-		fmt.Println("PROBLEM:", err)
-		return
+		return StockQuote{}, fmt.Errorf("read body error: %v", err)
 	}
+
 	err = json.Unmarshal(bodyBytes, &response)
 
 	if err != nil {
-		fmt.Println("PROBLEM:", err)
-		return
+		return StockQuote{}, fmt.Errorf("json parse error: %v", err)
 	}
-	fmt.Println(string(bodyBytes))
-	fmt.Printf("Symbol: %s\nCena : %v\n", response.GlobalQuote.Symbol, response.GlobalQuote.Price)
 
 	price, err := strconv.ParseFloat(response.GlobalQuote.Price, 64)
 
 	if err != nil {
-		fmt.Println("PROBLEM:", err)
-		return
+		return StockQuote{}, fmt.Errorf("price conversion error: %v", err)
 	}
+
 	volume, err := strconv.Atoi(response.GlobalQuote.Volume)
 
 	if err != nil {
-		fmt.Println("PROBLEM:", err)
-		return
+		return StockQuote{}, fmt.Errorf("volume conversion error: %v", err)
 	}
 
-	fmt.Printf("Price as Float64: %v\nVolume as int: %v", price, volume)
+	return StockQuote{
+		Symbol: response.GlobalQuote.Symbol,
+		Price:  price,
+		Volume: volume,
+	}, nil
+
+}
+
+func api() {
+
+	quote, err := fetchGlobalQuote("AAP3L")
+
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+	fmt.Println(quote.Symbol)
+	fmt.Println(quote.Price)
+	fmt.Println(quote.Volume)
 }
