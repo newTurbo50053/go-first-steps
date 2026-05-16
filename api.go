@@ -43,7 +43,7 @@ func fetchGlobalQuote(symbol string) (StockQuote, error) {
 	price, err := strconv.ParseFloat(response.GlobalQuote.Price, 64)
 
 	if err != nil {
-		return StockQuote{}, fmt.Errorf("4")
+		return StockQuote{}, fmt.Errorf(err.Error())
 	}
 	volume, err := strconv.Atoi(response.GlobalQuote.Volume)
 
@@ -59,13 +59,39 @@ func fetchGlobalQuote(symbol string) (StockQuote, error) {
 
 }
 
+func fetchMultipleQuotes(symbols []string) ([]StockQuote, error) {
+	quotes := []StockQuote{}
+
+	for _, symb := range symbols {
+
+		quote, err := fetchGlobalQuote(symb)
+		if err != nil {
+			return nil, fmt.Errorf(err.Error())
+		}
+		quotes = append(quotes, quote)
+
+	}
+	return quotes, nil
+}
 func api() {
 
-	ibmQuote, err := fetchGlobalQuote("IBM")
+	// ibmQuote, err := fetchGlobalQuote("IBM")
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return
+	// }
+	// fmt.Println(ibmQuote)
+
+	symbols := []string{"IBM", "AAPL", "MSFT"}
+
+	quotes, err := fetchMultipleQuotes(symbols)
 	if err != nil {
 		fmt.Println(err)
 		return
-	} else {
-		fmt.Println(ibmQuote, err)
 	}
+	// for _,symb := range quotes {
+	// 	fmt.Println(Symbol : response.GlobalQuoteResponse.)
+	// }
+	fmt.Println(quotes)
+
 }
