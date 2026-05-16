@@ -41,7 +41,7 @@ func fetchGlobalQuote(symbol string) (StockQuote, error) {
 	}
 
 	price, err := strconv.ParseFloat(response.GlobalQuote.Price, 64)
-
+	fmt.Print(price)
 	if err != nil {
 		return StockQuote{}, fmt.Errorf(err.Error())
 	}
@@ -73,6 +73,29 @@ func fetchMultipleQuotes(symbols []string) ([]StockQuote, error) {
 	}
 	return quotes, nil
 }
+
+func getMockQuotes() []StockQuote {
+	quotes := []StockQuote{
+		{Symbol: "IBM", Price: 218.37, Volume: 5906199},
+		{Symbol: "AAPL", Price: 195.64, Volume: 42100000},
+		{Symbol: "MSFT", Price: 426.31, Volume: 23800000},
+		{Symbol: "TSLA", Price: 177.82, Volume: 89000000},
+		{Symbol: "GOOGL", Price: 172.45, Volume: 31500000},
+	}
+
+	return quotes
+}
+func calculateScore(quote StockQuote) int {
+	punkty := 0
+
+	if quote.Price > 200 {
+		punkty += 1
+	}
+	if quote.Volume > 10000000 {
+		punkty += 1
+	}
+	return punkty
+}
 func api() {
 
 	// ibmQuote, err := fetchGlobalQuote("IBM")
@@ -82,16 +105,21 @@ func api() {
 	// }
 	// fmt.Println(ibmQuote)
 
-	symbols := []string{"IBM", "AAPL", "MSFT"}
+	// symbols := []string{"IBM", "AAPL"}
 
-	quotes, err := fetchMultipleQuotes(symbols)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+	// quotes, err := fetchMultipleQuotes(symbols)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return
+	// }
 	// for _,symb := range quotes {
 	// 	fmt.Println(Symbol : response.GlobalQuoteResponse.)
 	// }
-	fmt.Println(quotes)
+
+	quotes := getMockQuotes()
+	for _, quote := range quotes {
+		punkty := calculateScore(quote)
+		fmt.Println(quote, punkty)
+	}
 
 }
